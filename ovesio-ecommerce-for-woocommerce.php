@@ -3,7 +3,7 @@
  * Plugin Name: Ovesio - Ecommerce for WooCommerce
  * Plugin URI:  https://github.com/ovesio/ovesio-ecommerce-for-woocommerce
  * Description: Empowers your store with advanced AI-driven insights, stock management forecasting, and strategic consulting.
- * Version:     1.1.0
+ * Version:     1.1.2
  * Author:      Ovesio
  * Author URI:  https://ovesio.com
  * License:     GPLv2 or later
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'WC_OVESIO_VERSION' ) ) {
-	define( 'WC_OVESIO_VERSION', '1.1.0' );
+	define( 'WC_OVESIO_VERSION', '1.1.2' );
 }
 
 if ( ! defined( 'WC_OVESIO_PLUGIN_DIR' ) ) {
