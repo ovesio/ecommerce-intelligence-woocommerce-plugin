@@ -1,4 +1,4 @@
-=== Ovesio - Ecommerce Intelligence for WooCommerce ===
+=== Ovesio - Ecommerce for WooCommerce ===
 Contributors: ovesio
 Tags: woocommerce, ecommerce, intelligence, stock management, ai
 Requires at least: 5.0
