@@ -3,7 +3,7 @@ Contributors: ovesio
 Tags: woocommerce, ecommerce, intelligence, stock management, ai
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 Requires PHP: 7.4
 WC requires at least: 3.0
 WC tested up to: 10.4.3
@@ -77,6 +77,9 @@ When you install this plugin, a unique **Security Hash** is automatically genera
 == Screenshots ==
 
 == Changelog ==
+
+= 1.1.4 =
+*   New validation methods added
 
 = 1.1.3 =
 *   License updated to MIT.
