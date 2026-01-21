@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Ovesio - Ecommerce for WooCommerce
- * Plugin URI:  https://github.com/ovesio/ovesio-ecommerce-for-woocommerce
+ * Plugin URI:  https://github.com/ovesio/ecommerce-intelligence-woocommerce-plugin
  * Description: Empowers your store with advanced AI-driven insights, stock management forecasting, and strategic consulting.
  * Version:     1.1.3
  * Author:      Ovesio
@@ -19,34 +19,34 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'WC_OVESIO_VERSION' ) ) {
-	define( 'WC_OVESIO_VERSION', '1.1.3' );
+if ( ! defined( 'OVESIO_ECOMMERCE_VERSION' ) ) {
+	define( 'OVESIO_ECOMMERCE_VERSION', '1.1.3' );
 }
 
-if ( ! defined( 'WC_OVESIO_PLUGIN_DIR' ) ) {
-	define( 'WC_OVESIO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'OVESIO_ECOMMERCE_PLUGIN_DIR' ) ) {
+	define( 'OVESIO_ECOMMERCE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 }
 
-if ( ! defined( 'WC_OVESIO_PLUGIN_URL' ) ) {
-	define( 'WC_OVESIO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'OVESIO_ECOMMERCE_PLUGIN_URL' ) ) {
+	define( 'OVESIO_ECOMMERCE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
 /**
  * Main Class
  */
-if ( ! class_exists( 'WC_Ovesio_Ecommerce' ) ) {
-	include_once WC_OVESIO_PLUGIN_DIR . 'includes/class-wc-ovesio-ecommerce.php';
+if ( ! class_exists( 'Ovesio_Ecommerce' ) ) {
+	include_once OVESIO_ECOMMERCE_PLUGIN_DIR . 'includes/class-ovesio-ecommerce.php';
 }
 
 /**
  * Activation Hook
  */
-register_activation_hook( __FILE__, array( 'WC_Ovesio_Ecommerce', 'activate' ) );
+register_activation_hook( __FILE__, array( 'Ovesio_Ecommerce', 'activate' ) );
 
 /**
  * Deactivation Hook
  */
-register_deactivation_hook( __FILE__, array( 'WC_Ovesio_Ecommerce', 'deactivate' ) );
+register_deactivation_hook( __FILE__, array( 'Ovesio_Ecommerce', 'deactivate' ) );
 
 /**
  * HPOS Compatibility
@@ -60,9 +60,9 @@ add_action( 'before_woocommerce_init', function() {
 /**
  * Initialize
  */
-function wc_ovesio_init() {
-    if ( class_exists( 'WC_Ovesio_Ecommerce' ) ) {
-        WC_Ovesio_Ecommerce::instance();
+function ovesio_ecommerce_init() {
+    if ( class_exists( 'Ovesio_Ecommerce' ) ) {
+        Ovesio_Ecommerce::instance();
     }
 }
-add_action( 'plugins_loaded', 'wc_ovesio_init' );
+add_action( 'plugins_loaded', 'ovesio_ecommerce_init' );

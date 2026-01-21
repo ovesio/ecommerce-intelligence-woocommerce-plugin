@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WC_Ovesio_Ecommerce {
+class Ovesio_Ecommerce {
 
 	protected static $_instance = null;
 
@@ -64,8 +64,8 @@ class WC_Ovesio_Ecommerce {
 			return;
 		}
 
-		wp_enqueue_style( 'ovesio-admin-css', WC_OVESIO_PLUGIN_URL . 'assets/admin.css', array(), WC_OVESIO_VERSION );
-		wp_enqueue_script( 'ovesio-admin-js', WC_OVESIO_PLUGIN_URL . 'assets/admin.js', array( 'jquery' ), WC_OVESIO_VERSION, true );
+		wp_enqueue_style( 'ovesio-admin-css', OVESIO_ECOMMERCE_PLUGIN_URL . 'assets/admin.css', array(), OVESIO_ECOMMERCE_VERSION );
+		wp_enqueue_script( 'ovesio-admin-js', OVESIO_ECOMMERCE_PLUGIN_URL . 'assets/admin.js', array( 'jquery' ), OVESIO_ECOMMERCE_VERSION, true );
 	}
 
 	public function render_settings_page() {
@@ -82,7 +82,7 @@ class WC_Ovesio_Ecommerce {
 		$baseUrl = home_url( '/' );
 		$productFeedUrl = add_query_arg( array( 'ovesio_feed' => '1', 'hash' => $hash, 'action' => 'products' ), $baseUrl );
 		$orderFeedUrl   = add_query_arg( array( 'ovesio_feed' => '1', 'hash' => $hash, 'action' => 'orders' ), $baseUrl );
-		$logoUrl = WC_OVESIO_PLUGIN_URL . 'assets/logo.png';
+		$logoUrl = OVESIO_ECOMMERCE_PLUGIN_URL . 'assets/logo.png';
 		?>
 		<div class="wrap">
 			<div class="ovesio-header">
@@ -205,8 +205,8 @@ class WC_Ovesio_Ecommerce {
 				exit;
 			}
 
-			require_once WC_OVESIO_PLUGIN_DIR . 'includes/class-wc-ovesio-export.php';
-			$exporter = new WC_Ovesio_Export();
+			require_once OVESIO_ECOMMERCE_PLUGIN_DIR . 'includes/class-ovesio-export.php';
+			$exporter = new Ovesio_Ecommerce_Export();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Recommended
 			$action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : 'products';
 

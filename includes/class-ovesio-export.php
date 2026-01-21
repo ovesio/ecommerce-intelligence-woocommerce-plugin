@@ -3,11 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WC_Ovesio_Export {
+class Ovesio_Ecommerce_Export {
 
 	/**
 	 * Get orders export data.
-	 * 
+	 *
 	 * @param int $duration_months
 	 * @return array
 	 */
@@ -41,16 +41,16 @@ class WC_Ovesio_Export {
 		} else {
 			// Data stores in wp_posts - Optimize with direct SQL for speed
 			global $wpdb;
-			
+
 			$status_placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
 			// Remove 'wc-' prefix for database query if needed, but usually post_status is 'wc-completed'
-			
+
 			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$sql = $wpdb->prepare( "
-				SELECT ID 
-				FROM {$wpdb->posts} 
-				WHERE post_type = 'shop_order' 
-				AND post_status IN ($status_placeholders) 
+				SELECT ID
+				FROM {$wpdb->posts}
+				WHERE post_type = 'shop_order'
+				AND post_status IN ($status_placeholders)
 				AND post_date >= %s
 			", array_merge( $statuses, array( $date_from ) ) );
 			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -72,12 +72,12 @@ class WC_Ovesio_Export {
 				if ( ! $order ) {
 					continue;
 				}
-				
+
 				$order_products = array();
 				foreach ( $order->get_items() as $item ) {
 					$product = $item->get_product();
 					$sku = '';
-					
+
 					// Optimized SKU retrieval not worth singular query override due to object cached by WC,
 					// but we rely on $order object which is already loaded.
 					if ( $product ) {
@@ -97,7 +97,7 @@ class WC_Ovesio_Export {
 						'sku'      => $sku,
 						'name'     => $item->get_name(),
 						'quantity' => $qty,
-						'price'    => (float) $unit_price, 
+						'price'    => (float) $unit_price,
 					);
 				}
 
@@ -118,7 +118,7 @@ class WC_Ovesio_Export {
 
 	/**
 	 * Get products export data optimized.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get_products_export() {
@@ -127,15 +127,15 @@ class WC_Ovesio_Export {
 		// 1. Fetch all Published Products (Simple & Variable) directly from DB
 		// We explicitly want: ID, Type, Parent, Title, Content(desc), Excerpt(short_desc)
 		$sql = "
-			SELECT p.ID, p.post_title, p.post_content, p.post_excerpt, p.post_parent, p.post_type 
+			SELECT p.ID, p.post_title, p.post_content, p.post_excerpt, p.post_parent, p.post_type
 			FROM {$wpdb->posts} p
-			WHERE p.post_status = 'publish' 
+			WHERE p.post_status = 'publish'
 			AND p.post_type IN ('product', 'product_variation')
 		";
-		
+
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw_products = $wpdb->get_results( $sql );
-		
+
 		if ( empty( $raw_products ) ) {
 			return array();
 		}
@@ -152,14 +152,14 @@ class WC_Ovesio_Export {
 		$product_ids_sql = implode( ',', array_map( 'intval', $product_ids ) );
 		// Need: _sku, _price, _stock, _stock_status, _thumbnail_id
 		$meta_sql = "
-			SELECT post_id, meta_key, meta_value 
-			FROM {$wpdb->postmeta} 
-			WHERE post_id IN ($product_ids_sql) 
+			SELECT post_id, meta_key, meta_value
+			FROM {$wpdb->postmeta}
+			WHERE post_id IN ($product_ids_sql)
 			AND meta_key IN ('_sku', '_price', '_stock', '_stock_status', '_thumbnail_id', '_product_attributes')
 		";
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw_meta = $wpdb->get_results( $meta_sql );
-		
+
 		$meta_by_id = array();
 		foreach ( $raw_meta as $m ) {
 			$meta_by_id[ $m->post_id ][ $m->meta_key ] = $m->meta_value;
@@ -179,10 +179,10 @@ class WC_Ovesio_Export {
         ";
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $raw_terms = $wpdb->get_results( $terms_sql );
-        
+
         $terms_by_id = array();
         // Cache term parents for path building
-        $term_parents = array(); 
+        $term_parents = array();
 		$term_names = array();
 
         foreach ( $raw_terms as $row ) {
@@ -203,7 +203,7 @@ class WC_Ovesio_Export {
             // We should export Simple products AND Variations.
             // We should NOT export 'variable' parent products as distinct buyable items if we are exporting their variations.
             // However, keeping logic simple: If type is 'product' (simple) or 'product_variation', export.
-            
+
             // Check post type
 			if ( $p->post_type === 'product' ) {
 				// Check using meta if it is variable?
@@ -212,13 +212,13 @@ class WC_Ovesio_Export {
                 // We identify variable products by checking if they have children? Or typically we skip "variable" parents in feeds.
                 // But let's check if it has variations.
                 // Simplification for feed: Export everything that has a price.
-                
+
                 // If it's a variable product, it usually doesn't have a distinct price or stock, its variations do.
                 // We'll rely on Price existence.
 			}
 
             $meta = isset( $meta_by_id[ $id ] ) ? $meta_by_id[ $id ] : array();
-            
+
             $price = isset( $meta['_price'] ) ? $meta['_price'] : '';
             if ( $p->post_type === 'product' && $price === '' ) {
                 // Likely a variable product container or purely out of stock/draft logic, or grouped.
@@ -227,7 +227,7 @@ class WC_Ovesio_Export {
                 // A quick check: do we have variations for this parent?
                 // Optimization: Just check if we processed children.
                 // Safer heuristic: Export if it has a price.
-                continue; 
+                continue;
             }
 
             $sku = isset( $meta['_sku'] ) ? $meta['_sku'] : '';
@@ -238,7 +238,7 @@ class WC_Ovesio_Export {
             $qty = isset( $meta['_stock'] ) ? $meta['_stock'] : 0;
             $stock_status = isset( $meta['_stock_status'] ) ? $meta['_stock_status'] : 'instock';
             $availability = $stock_status === 'instock' ? 'in_stock' : 'out_of_stock';
-            
+
             if ( isset( $meta['_stock'] ) && $qty <= 0 && $stock_status === 'instock' ) {
                  // Managed stock with 0 qty but status instock? (Backorders)
                  // Keep as in_stock
@@ -271,7 +271,7 @@ class WC_Ovesio_Export {
             // Manufacturer / Brand
             $manufacturer = '';
             $product_terms = isset( $terms_by_id[ $id ] ) ? $terms_by_id[ $id ] : array();
-            
+
             // Try to find brand in terms
             foreach( ['pa_manufacturer', 'pa_brand', 'brand', 'manufacturer'] as $tax ) {
                 if ( isset( $product_terms[ $tax ] ) && ! empty( $product_terms[ $tax ] ) ) {
@@ -298,7 +298,7 @@ class WC_Ovesio_Export {
             if ( $p->post_type === 'product_variation' ) {
                 $cat_target_id = $p->post_parent;
             }
-            
+
             $cat_path_str = '';
             if ( isset( $terms_by_id[ $cat_target_id ]['product_cat'] ) ) {
                  $cat_ids = $terms_by_id[ $cat_target_id ]['product_cat'];
@@ -313,7 +313,7 @@ class WC_Ovesio_Export {
                          $curr = isset( $term_parents[$curr] ) ? $term_parents[$curr] : 0;
                          if ( $curr == 0 ) break;
                          // Prevent infinite loop if bad data
-                         if ( in_array( $term_names[$curr] ?? '', $path ) ) break; 
+                         if ( in_array( $term_names[$curr] ?? '', $path ) ) break;
                      }
                      $cat_path_str = implode( ' > ', $path );
                  }
@@ -323,7 +323,7 @@ class WC_Ovesio_Export {
             $name = $p->post_title;
             if ( $p->post_type === 'product_variation' && $p->post_parent ) {
                 $parent_title = isset( $products_by_id[ $p->post_parent ] ) ? $products_by_id[ $p->post_parent ]->post_title : '';
-                $name = $parent_title . ' - ' . $name; 
+                $name = $parent_title . ' - ' . $name;
                 // Alternatively, variations often have title "Variation #123", we might want the attributes in name?
                 // Standard WC behavior is "Parent Name - Attribute Name".
                 // Detailed name generation is complex without WC functions (`$product->get_name()`).
